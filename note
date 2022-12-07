@@ -1,0 +1,287 @@
+from os import path
+from time import *
+
+# projectPath = ""
+projectPath = path.dirname(__file__)
+note_path = f"{projectPath}"
+
+
+def default_files_type():
+    return "txt"
+
+
+def default_files_mode():
+    return "a"
+
+
+def create_file_path(get_path=None):
+    if get_path == 0:
+        get_path = input('Enter Path :> ').strip()
+        if len(get_path) == 0:
+            get_path = ""
+    if len(get_path) > 0:
+        if get_path == list(get_path):
+            if len(get_path) > 1:
+                get_path = "".join(get_path)
+        get_path = get_path.strip().replace(" ", "").replace("\\", "/")
+        for i in range(len(get_path)):
+            if i + 1 < len(get_path):
+                if get_path[i] == "\\" and get_path[i + 1] == "\\":
+                    get_path = get_path[0:i] + get_path[i + 1:]
+                    get_path = get_path.replace("\\", "/")
+        for i in range(len(get_path)):
+            if i + 1 < len(get_path):
+                if get_path[i] == "/" and get_path[i + 1] == "/":
+                    get_path = get_path[0:i] + get_path[i + 1:]
+                    get_path = get_path.replace("//", "/")
+        if get_path[-1] != "/":
+            get_path += "".join("/")
+    elif len(get_path) == 0 or get_path is None:
+        get_path = ""
+    return get_path
+
+
+def create_file_safety(file_name=None, file_path=None):
+    try:
+        if file_path == 0:
+            file_path = input("Enter File Path | Use '/' | :> ")
+        if file_name == 0:
+            file_name = input("Enter File Name :> ")
+        if len(file_name) == 0 or file_name is None:
+            file_name = "NewFile"
+        if len(file_path) == 0 or file_path is None:
+            file_path = ""
+        else:
+            file_path = create_file_path(file_path)
+        file_type = default_files_type()
+        found_safety = open(fr"{file_path}{file_name}.{file_type}", "a")
+        found_safety.close()
+    except Exception as e:
+        print(e)
+
+
+def create_file_new(file_name=None, file_path=None):  # create  count , see setnote def
+    try:
+        if file_path == 0:
+            file_path = input("Enter File Path | Use '/' | :> ").strip()
+        if file_name == 0:
+            file_name = input("Enter File Name :> ").strip()
+        if len(file_name) == 0 or file_name is None:
+            file_name = "NewFile"
+        if len(file_path) == 0 or file_path is None:
+            file_path = ""
+        else:
+            file_path = create_file_path(file_path)
+        file_type = default_files_type()
+        found_safety = open(fr"{file_path}{file_name}.{file_type}", "a")
+        found_safety.close()
+    except Exception as e:
+        print(e)
+
+
+def sbm_rule():
+    middle = " tnote "
+    start = "tnote "
+    return middle, start
+
+
+def note_order(send_box_message=None):
+    send_box_message = send_box_message.strip().replace("  ", " ")
+    middle, start = sbm_rule()
+    print("-note order check >> len state-")
+    if len(send_box_message) >= len(middle) or len(send_box_message) >= len(start):
+        print("-note order check >> start state-")
+        if middle in send_box_message:
+            text_note = send_box_message.index(middle) + len(middle)
+            final_text_note = send_box_message[text_note:].strip()
+            print("-note order = text-")
+            print(final_text_note)
+        elif start in send_box_message:
+            text_note = send_box_message.index(start) + len(start)
+            final_text_note = send_box_message[text_note:].strip()
+            print("-note order = text-")
+            print(final_text_note)
+        else:
+            print("-note order start = none")
+    else:
+        print("-note order len = None-")
+
+
+# messageCome = note_order(send_box_message="type here tnote type here and noted")
+
+
+def check_safety(get_path, name):
+    # 1. check if not there
+    check_safety_read = open(f"{get_path}{name}.txt", "a")
+    check_safety_read.close()
+    check_safety_result = True
+    return check_safety_result
+
+
+def count_notes_get(get_path, name):
+    # 2. read count all notes
+    check_safety_result = check_safety()
+    if check_safety_result:
+        count_read = open(f"{get_path}{name}.txt", "r")
+        note_count = count_read.readlines()[-1]
+        count_notes_get_result = note_count
+        count_read.close()
+    return count_notes_get_result
+
+
+def last_note(get_path, name):
+    # 3. show last note
+    # add get_path
+    note_count = count_notes_get()
+    last_note_read = open(f"{get_path}{name}.txt", "r")
+    last_note_read_call = last_note_read.read()
+    last_line_no = last_note_read_call.index(f"* Note {note_count}:")
+    last_note_result = last_note_read_call[last_line_no:]
+    last_note_read.close()
+    return last_note_result
+
+
+def all_notes(get_path, name):
+    # 4. show all notes
+    all_notes_read = open(f"{get_path}{name}.txt", "r")
+    all_note_read_call = all_notes_read.read()
+    all_notes_result = all_note_read_call
+    all_notes_read.close()
+    return all_notes_result
+
+
+def note_show_form(kind, get_path, name):
+    # kind = "count_notes_get"
+    # 1. check safety Form
+    if kind == "checkSafety":  # not complete
+        check_safety_result = check_safety(get_path, name)
+        show_check_safety = f"You Have {check_safety_result} Notes.\n"
+        return show_check_safety
+    # 2. count note Form
+    if kind == "countNotesGet":
+        count_notes_get_result = count_notes_get(get_path, name)
+        show_count_notes = f"You Have {count_notes_get_result} Notes.\n"
+        return show_count_notes
+    # 3. last note Form
+    if kind == "lastNote":
+        last_note_result = last_note(get_path, name)
+        show_last_notes = f"Last Note Is : \n\n{last_note_result}"
+        return show_last_notes
+    # 4. all notes Form
+    if kind == "allNotes":
+        all_notes_result = all_notes(get_path, name)
+        show_all_notes = f"Your Notes Is : \n\n{all_notes_result}"
+        return show_all_notes
+
+
+def set_notes(get_path, name, get_text):
+    # learn note and set / or 2 of \ # 11/25/2022 6:35 PM cairo
+    new_line_form = "\n\t\t "
+    new_line = False
+    get_path = str(get_path)
+    name = str(name)
+    get_text = str(get_text)
+    if get_path == '0':
+        get_path = input('Enter Path | only "/" | Remove Spaces |:>  ').strip()
+    get_path = create_file_path(get_path)
+    if name == '0':
+        name = input('Enter File Name :>  ').strip()
+    if get_text == '0':
+        get_text = input('Enter File Text :>  ').strip()
+    count_set = 1
+    count_set_create = open(f'{get_path}{name}count.txt', 'a')
+    count_set_read = open(f'{get_path}{name}count.txt', 'r')
+    if count_set_read.readline() == '':
+        count_set_create.write(str(count_set))
+        count_set_create.close()
+        count_set_read.close()
+    else:
+        count_set_read = open(f'{get_path}{name}count.txt', 'r')
+        count_set_call = int(count_set_read.readlines()[0])
+        count_set = count_set_call
+        count_set_read.close()
+        count_set += 1
+    for foundNewLine in range(len(get_text)):
+
+        if get_text[foundNewLine] == "*":
+            new_line = True
+    # Do Not Use This to Replace inside file, cuz there is others * not return to NewLine 11/26/2022 pass it to later
+    # time but Try cut some Text First After that Test Replace, Search In code Ready about Replace
+    if new_line:
+        get_text = get_text.replace("*", f"{new_line_form}")
+    text_form = f'* Note {count_set}:\n\n\t" {get_text} \n\n\t"\n\n-- End --\n\n'
+
+    note_write = open(f'{get_path}{name}.txt', 'a')
+    note_write.write(text_form)
+    note_write.close()
+    count_set_write = open(f'{get_path}{name}count.txt', 'w')
+    count_set_write.write(str(count_set))
+    count_set_write.close()
+
+
+def send_notes(ln_name, get_note_text):
+    print("to New Line type * \n")
+    set_notes(note_path, ln_name, get_note_text)
+    print(" Noted Successfully * \n")
+    # result = " Noted Successfully * \n" # print it ? or return it? wait for messages page def builded
+    # return result
+
+
+def get_notes(get_path, name, state):  # learn note and set / or 2 of \ # 11/25/2022 6:35 PM cairo
+    # #  state equal last Note or all Notes
+    last_note_value = False
+    all_note_value = False
+    get_path = str(get_path)
+    name = str(name)
+    state = str(state)
+    if get_path == '0':
+        get_path = input('Enter Path | only "/" | Remove Spaces |:>  ').strip()
+        # how to send boolean throw def()
+    get_path = create_file_path(get_path)
+    if name == '0':
+        name = input('Enter File Name :>  ').strip()
+    if state == '0':
+        state = input('Enter File state | lastNote , allNote | :>  ').strip()
+    if state == "lastNote":
+        last_note_value = True
+    elif state == "allNote":
+        all_note_value = True
+    note_read = open(f'{get_path}{name}.txt', 'r')
+
+    if last_note_value:
+        last_note_read = note_read.readlines()[-1]
+        note_read.close()
+        read_result = last_note_read
+    elif all_note_value:
+        all_note_read = note_read.read()
+        note_read.close()
+        read_result = all_note_read
+    return read_result
+
+
+def receive_notes(name, state):  # what this? 2 get_notes!
+    if state == "lastNote":
+        get_notes(f"{note_path}", name, state)
+    elif state == "allNote":
+        get_notes(f"{note_path}", name, state)
+
+    return get_notes
+
+
+def text_noted(note_title, note_text):
+    note_date = f" {localtime().tm_mon}/{localtime().tm_mday}/{localtime().tm_year}  " \
+                f"{localtime().tm_hour}:{localtime().tm_min}:{localtime().tm_sec}"  # import time
+    # note_date = 00
+    print(send_notes("airiTaskNote", f"""Title:  {note_title}      At {note_date} ** *{note_text} """))
+    # print(receive_notes("airiTaskNote","allNote"))
+
+
+# create 'writeNotes' folder in any python project you work in it
+# and put this code up there in side 'Notes' file
+# can use just the four lines down there, and can use it 
+# from anywhere and import this file
+# type your notes when you work
+""" note >> to new line type * """
+title = "hello"
+text = "how are you*what about"
+text_noted(title, text)
